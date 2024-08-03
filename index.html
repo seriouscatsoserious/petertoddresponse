@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Drivechains: A Detailed Analysis</title>
+    <meta
+      name="description"
+      content="Drivechains is a controversial proposal aiming to allow for the creation of sidechains containing coins meant to be pegged 1:1 to Bitcoin. Here we will analyze..."
+    />
+    <link rel="canonical" href="https://petertodd.org/2023/drivechains" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Peter Todd"
+      href="https://petertodd.org/feed.xml"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="main-content">
+        <header>
+          <h1>Drivechains: A Detailed Analysis</h1>
+          <time datetime="2023-10-13T00:00:00+00:00">Oct 13, 2023</time>
+        </header>
+
+        <div>
+          <p>
+            Drivechains is a controversial proposal aiming to allow for the
+            creation of sidechains containing coins meant to be pegged 1:1 to
+            Bitcoin. Here we will analyze what drivechains actually proposes,
+            technical flaws of drivechains, how drivechains could affect Bitcoin
+            itself, and finally, discuss whether or not the idea is actually
+            likely to see significant usage.
+          </p>
+
+          <p>
+            Credit goes to Matthew Haywood in particular for productive
+            discussions about the characteristics and flaws of drivechains. He
+            has published his own critique of drivechains
+            <a
+              href="https://medium.com/@wintercooled/drivechains-potential-issues-as-they-relate-to-bitcoin-54a79ceb5442"
+              >here</a
+            >.
+          </p>
+
+          <h2 id="backstory">Backstory</h2>
+          <p>
+            First of all,
+            <a href="https://layertwolabs.com/">LayerTwo Labs</a> is paying me
+            $2500 USD for ~16 hours of work to write this blog post. $1250 up
+            front, with the rest due upon completion. The inventor of
+            drivechains, Paul Stzorc, is the CEO and co-founder of LayerTwo
+            Labs. I meanwhile have been a critic of drivechains since the idea
+            was published. In some ways even before the idea was published, as I
+            was also a critic of
+            <span
+              class="highlight"
+              data-critique="intro-1"
+              style="background-color: rgba(0, 123, 255, 0.2)"
+              >Blockstream’s (since abandoned)</span
+            >
+            idea of merged-mined, pegged sidechains.
+          </p>
+          <p>
+            Paul Stzorc seems to be of the idea that 
+            <span
+              class="highlight"
+              data-critique="intro-2"
+              style="background-color: rgba(255, 0, 0, 0.2)"
+              >paying me to write this
+            blog post will change my mind:</span
+            >
+          </p>
+          <blockquote>
+            <p>
+              Thus, it is a waste of time to talk to those three, since after
+              @peterktodd admits he was mistaken those 3 will all either cave,
+              and/or become irrelevant. So I am excited to announced that
+              @LayerTwoLabs has agreed to hire Peter Todd to clarify and
+              publish, in writing, the technical pros (if any) and cons of
+              Drivechain in detail, no holds barred. PT is the original hater of
+              merged mining, since April 2014 at least. -
+              <a
+                href="https://web.archive.org/web/20230821153506/https://twitter.com/Truthcoin/status/1681072999070330883"
+                >Paul Stzorc, Twitter, Jul 17th 2023</a
+              >
+            </p>
+          </blockquote>
+          <p>I can assure you, the only thing he bought was my time.</p>
+
+          <h2 id="scope">Scope</h2>
+          <p>
+            Two BIPs have been published,
+            <a
+              href="https://github.com/bitcoin/bips/blob/c2f4825550b5e13df0c8db650610808e1869cefd/bip-0300.mediawiki"
+              >BIP-300 Hashrate Escrows</a
+            >
+            and
+            <a
+              href="https://github.com/bitcoin/bips/blob/16fba9650aea71b6765fbd9ffdb9a2c1e7562d00/bip-0301.mediawiki"
+              >BIP-301 Blind Merge Mining</a
+            >, and Luke-Jr was recently paid to write a
+            <a href="https://github.com/bitcoin/bitcoin/pull/28311"
+              >draft implementation against Bitcoin Core</a
+            >. This post references these sources for its critiques.
+          </p>
+          <p><p>
+            <span
+              class="highlight"
+              data-critique="intro-3"
+              style="background-color: rgba(0, 123, 255, 0.2)"
+            >            Due to time constraints, this blog post cannot be a comprehensive
+            analysis of all possible objections to drivechains. While the
+            client, LayerTwo Labs, asked me to confirm that my blog post would
+            contain “all of your criticisms and concerns on Drivechain” they
+            declined to pay me for the time it would take to do that analysis.</span>
+          </p>
+
+          </p>
+
+          <h2 id="background">Background</h2>
+          <p>
+            To understand drivechains, let’s start with the motivation. Paul
+            Sztorc’s own Hivemind proposal is a good example. Hivemind is meant
+            to be a prediction market, where people can place
+            Bitcoin-denominated bets on real-world outcomes. The specifics of
+            Hivemind are not important here. What is important, is that Hivemind
+            aims to accomplish two things:
+          </p>
+          <ol>
+            <li>
+              Implement rules that the Bitcoin community is unwilling to add to
+              the Bitcoin protocol.
+            </li>
+            <li>Apply those rules to BTC held in escrow.</li>
+          </ol>
+          <p>
+            The challenge here is implementing the escrow. One way is of course
+            to simply use a federation. Blockstream Liquid, for example,
+            implements this by holding the escrow BTC in an 11-of-15 multisig,
+            with the functionaries who can sign that multisig also signing
+            blocks in the Liquid consensus protocol.
+          </p>
+          <p>
+            Liquid’s federated multisig is a compromise. Prior to launching
+            Liquid in 2018, Blockstream proposed the use of a hashrate escrow in
+            their 2014 Pegged Sidechains paper. However, for reasons we will now
+            analyze, Blockstream gave up on the idea.
+          </p>
+
+          <h2 id="hashrate-escrows">Hashrate Escrows</h2>
+          <p>
+            Essentially all transaction outputs in the existing Bitcoin system
+            are protected by public key cryptography. Recall that in Bitcoin,
+            specific transaction outputs are associated with scriptPubKey’s,
+            small computer programs whose conditions must be satisfied for an
+            output to be spendable. Essentially all transaction outputs are
+            protected by scriptPubKeys with a form similar to the following:
+          </p>
+          <pre><code>&lt;pubkey&gt; CheckSig</code></pre>
+          <p>
+            A transaction spending such a transaction output is only valid if a
+            valid signature is provided, which causes the CheckSig to return
+            true. This means that miners can not simply steal coins from the
+            perspective of a fully validating node: no amount of Bitcoin hash
+            power can fake a digital signature.
+          </p>
+          <p>
+            In the pegged sidechains proposal, Blockstream proposed the idea of
+            a hashrate escrow, treating hash power as a dynamic-membership
+            multiparty signature (DMMS). The simplest possible example of a
+            hashrate escrow is the scriptPubKey:
+          </p>
+          <pre><code>True</code></pre>
+          <p>
+            Since this script simply returns true, no cryptographic signature is
+            needed. Such scripts are often called “anyone-can-spend” scripts.
+            However this term is slightly misleading: it’s miners who produce
+            blocks, so strictly speaking, only miners can spend that output.
+          </p>
+          <p>
+            Of course, if an output can be spent by any miner, surely it will
+            just be stolen, right? Probably! Blockstream proposed to fix this
+            problem with two main mitigations:
+          </p>
+          <ol>
+            <li>
+              Multisig: multiple blocks would have to approve a spend of
+              hashrate-escrowed funds. Blockstream’s paper suggested one or two
+              days worth of blocks; 144 to 288 blocks total.
+            </li>
+            <li>
+              Fraud proofs: once the spend was approved, there would be an
+              additional one to two day waiting period where proofs of
+              fraudulent transfer could be published on the Bitcoin chain,
+              potentially cancelling the spend before it actually happens. This
+              idea is similar in spirit to Lightning’s justice transactions,
+              with the very important difference that Lightning’s justice
+              transactions are actually implemented and have been proven to work
+              in the wild.
+            </li>
+          </ol>
+          <p>
+            In my discussions with some of the authors of the pegged sidechains
+            paper, I’ve been told that one of the main things — in their view —
+            that halted the pegged sidechains project was that actually
+            implementing fraud proofs turned out to be much more difficult than
+            they had hoped.
+          </p>
+
+          <h3 id="bip-300-the-drivechain-take-on-hashrate-escrows">
+            BIP-300: The Drivechain Take on Hashrate Escrows
+          </h3>
+          <p>
+            The first part of the drivechains proposal, BIP-300, describes a
+            hashrate escrow scheme. As per the BIP-300 introduction:
+          </p>
+          <blockquote>
+            <p>
+              In Bip300, txns are not signed via cryptographic key. Instead,
+              they are “signed” by hashpower, over time. Like a big multisig,
+              13150-of-26300, where each block is a new “signature”.
+            </p>
+          </blockquote>
+          <p>
+            Unlike Blockstream’s proposal, BIP-300 does not have any concept of
+            fraud proofs. As the BIP-300 introduction suggests, BIP-300 is a
+            strict hashrate escrow where miners unilaterally decide if and how
+            to spend the escrowed coins, regardless of what rules the associated
+            drivechain is meant to enforce. This includes spending coins in ways
+            that some people may characterize as “theft”.
+          </p>
+          <p>
+            While Blockstream proposed relatively short, one to two day, voting
+            and fraud proof periods, BIP-300 proposes much longer timescales of
+            approximately 3 to 6 months. Concretely, to withdraw coins from the
+            BIP-300 hashrate escrow, a miner must propose the hash of what is
+            supposed to be a “bundle” of transaction outputs in their coinbase
+            to pay. Following that proposal, in the next 26300 blocks —
+            approximately 6 months — at least 13150 blocks must ACKs that
+            specific bundle in the coinbase transaction. If the bundle is
+            successful, a transaction may be included in the block spending some
+            or all of the escrowed funds to the bundled transaction outputs.
+          </p>
+
+          <h4 id="other-unimportant-bip-300-criticism">
+            Other Unimportant BIP-300 Criticism
+          </h4>
+          <p>
+            While an unimportant criticism in the overall context of what we
+            just discussed, I’ll also point out that the inclusion of human
+            readable names, descriptions, tarball hashes, git commit hashes,
+            etc. in the BIP-300 specification is very silly, amateur mistake.
+            Obviously, any real use of a drivechain would not start with
+            non-consensus-enforced information obtained on a blockchain. The
+            inclusion of such fields merely serves to aid in fraudulent attempts
+            at confusing users.
+          </p>
+
+          <h2 id="bip-301-blind-merge-mining">BIP-301: Blind Merge Mining</h2>
+          <p>
+            The second part of the drivechains proposal aims to provide a
+            consensus mechanism. This BIP describes itself as a form of merge
+            mining, with the crucial difference that rather than have miners run
+            full nodes for the merge-mined chain, they are simply paid to
+            blindly commit to that chain in transactions via a fee-bidding
+            mechanism.
+          </p>
+          <p>
+            Merge mining itself is a very old idea, pioneered by Namecoin in
+            2010. Essentially a merge-mined coin has consensus rules such a
+            valid attempt at finding a mainchain (eg Bitcoin) block can
+            simultaneously be a valid attempt at finding a merge-mined coin
+            block.
+          </p>
+          <p>
+            BIP-301 doesn’t actually specify in detail how a blind-mined chain
+            is meant to actually form a consensus. Those specific rules would be
+            part of the blind-mined chain’s consensus, not Bitcoin itself.
+            However it’s notable that for the most obvious and efficient way of
+            implementing those rules, BIP-301 has a serious cryptographic flaw
+            which we will discuss separately.
+          </p>
+          <p>
+            With respect to Bitcoin, you can think of BIP-301 as a mechanism
+            where mining a special type of transaction requires a miner to also
+            add a specific OP_Return output to their coinbase transaction that
+            commits to 32-bytes.
+          </p>
+          <p>
+            Since only one such transaction can be included, the economically
+            rational outcome of the mechanism is a fee-based auction: highest
+            fee wins.
+          </p>
+
+          <h3 id="equivocation-attack">Equivocation Attack</h3>
+          <p>
+            As per BIP-301, the result of an accepted Blind Merge Mined block is
+            that an OP_Return output in the following format is added to the
+            coinbase:
+          </p>
+          <pre><code>1-byte - OP_RETURN (0x6a)
+4-bytes - Message header (0xD1617368)
+32-bytes - h* (obtained from Simon)</code></pre>
+          <p>
+            An obvious problem with this design is it’s subject to equivocation
+            attacks. The obvious and efficient implementation of a merge mined
+            chain is to use a SPV proof to the coinbase transaction to prove
+            that a block has been blind-merge-mined. But since the OP_Return
+            format doesn’t commit to which chain is being blind-merge-mined, a
+            miner could in fact include multiple conflicting OP_Return
+            transactions at the same block height. This is similar to the
+            “double-proof” problem that Namecoin solved back in 2011.
+          </p>
+          <p>
+            An obvious solution would be to tag the OP_Return outputs with some
+            kind of merge-mined chain identifier, and implement a strict rule
+            consensus rule in the blind-merge-mined chain where the first
+            matching tag wins.
+          </p>
+
+          <h3 id="reorgs-invalidating-coins">Reorgs Invalidating Coins</h3>
+          <p>The blind-merge-mine request has the following format:</p>
+          <pre><code>3-bytes - Message header (0x00bf00)
+32-bytes  - h* (side:MerkleRoot)
+1-byte  - nSidechain (sidechain ID number)
+4-bytes - prevMainHeaderBytes (the last four bytes of the previous main:block)</code></pre>
+          <p>
+            The last field, prevMainHeaderBytes, is designed to commit to the
+            previous block header, ensuring that a blind-merge-mined request
+            transaction is only valid in a specific block. This directly
+            conflicts with an important principle of Bitcoin consensus design:
+            reorgs should not invalidate transactions. For example, this is why
+            coinbase outputs are only spendable after 100 blocks, and why we
+            have not and will not implement consensus-level transaction expiry.
+          </p>
+          <p>
+            A way to fix this would be to limit request transactions to
+            containing exactly one output, an OP_Return containing the request
+            message.
+          </p>
+
+          <h2 id="the-lack-of-bip-301-and-bip-300-interaction">
+            The Lack of BIP-301 and BIP-300 Interaction
+          </h2>
+          <p>
+            A very notable omission in BIP-301 is that BIP-301 does not interact
+            with BIP-300 Hashrate Escrows. There is no mechanism to pay miners
+            to ACK or NACK a specific BIP-300 hashrate escrow withdrawal
+            proposal. The only way that coins can be withdrawn from a drivechain
+            is by the direct participation of at least a majority of hash power
+            over the 3 to 6 month withdrawal period.
+          </p>
+          <p>
+            BIP-301 clearly states in the Motivation section that it is intended
+            to fix drawbacks of traditional merge mining, including the fact
+            that in traditional merge mining:
+          </p>
+          <blockquote>
+            <p>
+              Miners must run a full node of the other chain(s). (Thus, they
+              must run “non-Bitcoin” software which may be buggy.)
+            </p>
+          </blockquote>
+          <p>
+            But this obviously conflicts with the requirement that miners either
+            run drivechain full nodes, or trust others to run them for them, to
+            safely allow withdrawals to happen. If miners are not doing that,
+            either coins become stuck, or they become subject to theft.
+          </p>
+          <p>
+            Frankly, when I first learned about drivechains I had assumed that
+            the blind-merge-mine mechanism also allowed for blind withdrawal
+            proposals of some kind given the decentralization claims around
+            drivechains. I was shocked when I learned otherwise. The proposal
+            simply punts on this obvious issue, with no solution.
+          </p>
+          <p>We’ll discuss the implications of this omission further.</p>
+
+          <h2 id="analysis-how-can-drivechains-affect-bitcoin">
+            Analysis: How Can Drivechains Affect Bitcoin?
+          </h2>
+          <p>
+            Now that we’ve covered how the drivechain proposal works, along with
+            some more obvious flaws, we can analyze how drivechains can affect
+            Bitcoin. Let’s start with our goals. We want Bitcoin to be:
+          </p>
+          <ol>
+            <li>
+              <strong><em>Useful</em></strong
+              >: Bitcoin must continue to allow people to provide a store of
+              value and medium of exchange, which collectively comprise the vast
+              majority of what people use Bitcoin for.
+            </li>
+            <li>
+              <strong><em>Secure</em></strong
+              >: Bitcoin must continue to be useful even in the face of attack.
+            </li>
+            <li>
+              <strong><em>Decentralized</em></strong
+              >: in achieving goal #2, we do not trust any single entity or
+              group of entities; we assume any single entity or group of
+              entities may attack Bitcoin.
+            </li>
+          </ol>
+          <p>
+            The last goal has generated the bulk of the discussion around
+            drivechains: do they encourage centralization of Bitcoin mining?
+          </p>
+
+          <h3 id="mining-centralization">Mining Centralization</h3>
+          <p>
+            Bitcoin mining comprises of both hashing, and block verification and
+            production. The economics of Bitcoin mining have both economies and
+            diseconomies of scale. These economies and diseconomies of scale act
+            as centralizing and decentralizing pressures.
+          </p>
+          <p>
+            The primary diseconomy of scale is the fact that Bitcoin hashing
+            consumes energy and produces heat. Opportunities to obtain cheap
+            energy, and to dispose of or make use of waste heat, have inherent
+            diseconomies of scale due to the fact that the cheapest energy
+            production is inherently spread out across the globe. For example,
+            flare gas and stranded/surplus renewable energy are some of the
+            cheapest sources of energy available. Obviously, opportunities to
+            collect flare gas and renewable energy are inherently spread across
+            the globe. This is a diseconomy of scale because the maximum size of
+            these operations is limited by the available energy at any one
+            location. A oil well that generates 100KW of free waste flare gas in
+            a given location simply can’t generate more free waste gas at any
+            reasonable price.
+          </p>
+          <p>
+            Similarly, some hashing operations make use of their waste heat, eg
+            to heat buildings. Obviously, the amount of waste heat that any one
+            location can make use of is inherently limited. Again, this acts as
+            a diseconomy of scale: a house that can be sufficiently heated with
+            50KW of hash power simply has no use for more hash power in that
+            location.
+          </p>
+          <p>
+            Grid stabilization is another example of a diseconomy of scale. Some
+            Bitcoin hashing operations have been able to get credits on their
+            electricity bills for providing the ability to quickly reduce their
+            power usage. Obviously, the maximum amount of grid stabilization
+            needed in any one geographic area is limited, creating a diseconomy
+            of scale.
+          </p>
+          <p>
+            The primary economies of scale are in mining pools. They exist
+            because of variance: with just 144 Bitcoin blocks generated per day,
+            the average Bitcoin hashing operation mining blocks directly for
+            themselves (solo-mining) would need to wait months or even years
+            between payments. Secondly, the operating costs of a mining pool are
+            mostly fixed: the bandwidth and compute power needed per hashing
+            operation is almost zero. If the overhead costs of operating the
+            necessary nodes is non-trivial, there is a significant savings for a
+            large pool compared to a small pool as that overhead is spread over
+            more clients.
+          </p>
+          <p>
+            Thus we see that while Bitcoin hashing is quite decentralized — with
+            a very large number of individual hashing operations in existence —
+            the number of Bitcoin mining pools is much more limited. At the time
+            of writing, the majority of hash power is spread over just two
+            pools:
+          </p>
+          <img
+            src="/assets/2023-10-13/hashpower-distribution.png"
+            alt="Hashpower Distribution"
+          />
+          <p>
+            While undesirable, this situation isn’t fatal as, in theory, bad
+            behavior can cause hashing operations to quickly switch from one
+            pool to another. Additionally, there are technologies like
+            StratumV2, p2pool, and braidpool that decentralize block production
+            (mining).
+          </p>
+          <p>
+            While we don’t have space to go into details about these
+            technologies, the important thing in the context of drivechains is
+            that they all require hashing operations to produce blocks
+            themselves, requiring them to run full nodes.
+          </p>
+
+          <h3 id="do-miners-need-to-run-drivechain-nodes">
+            Do Miners Need to Run Drivechain Nodes?
+          </h3>
+          <p>Yes.</p>
+          <p>
+            The reason why is simple: if drivechains are to work correctly, coin
+            withdrawal needs to work. Drivechains requires that a majority of
+            hash power directly vote on withdrawal proposals, and the only way
+            to validate a withdrawal proposal for a given drivechain is to run a
+            node for that drivechain.
+          </p>
+          <p>
+            Since there could be dozens, or even hundreds, of drivechains this
+            is an obvious economy of scale that will significantly centralize
+            mining: every one of those drivechains will have associated software
+            that needs installation, maintenance, and upgrades. Those drivechain
+            nodes will require bandwidth, CPU time, and storage space.
+          </p>
+          <p>
+            This is why the fact that blind merge mining and coin withdrawal
+            votes are unconnected is such a glaring omission: while blind merge
+            mining claims to fix the mining decentralization problem, the fact
+            that withdrawal votes require direct majority miner involvement
+            negates this claim.
+          </p>
+          <p>
+            I suspect the reason for this omission is that the authors of
+            drivechains attempted to make blind withdrawal voting, and failed
+            due to it being incompatible with rational game theory: if you can
+            pay money to steal coins, obviously someone will do exactly that.
+            Requiring a majority of hash power to vote in favor of a coin
+            withdrawal obscures this problem.
+          </p>
+          <p>
+            The fact that miners need to run drivechain nodes is particularly
+            problematic to the claims that drivechains will scale Bitcoin.
+            Obviously, if drivechains supporting hundreds or thousands of
+            transactions per second catch on, miners will need to invest in
+            thousands or tens of thousands of dollars worth of computing
+            hardware and bandwidth to mine. This is completely incompatible with
+            technologies that decentralize mining such as the aformentioned
+            StratumV2 and p2pool/braidpool.
+          </p>
+
+          <h3 id="the-phone-a-friend-model">The “Phone a Friend” Model</h3>
+          <p>
+            To avoid the necessity of miners running drivechain nodes, it has
+            been suggested that miners could instead just “phone a friend” and
+            just copy withdrawal approval hashes from “trusted sources” like
+            social media. There’s a lot of problems with this model:
+          </p>
+          <ol>
+            <li>
+              Why should miners do anything at all? There’s no direct incentive
+              to approving withdrawal requests, so miners have no reason to
+              actually go through these steps. This is especially true in the
+              case of decentralized mining tech such as StratumV2 and
+              p2pool/brainpool. I personally used to mine with p2pool, and I
+              never touched my configuration after setting it up.
+            </li>
+            <li>
+              Workload: drivechain proponents imagine a future with dozens or
+              even hundreds of drivechains. With a 3 to 6 month withdrawal
+              period, that would require miners to research and input NACKs and
+              ACKs for drivechains every week or so. Even without actually
+              running drivechain software that’s an enormous increase in
+              workload compared to the status quo for running a full node, where
+              you might want to change software every few years for new soft
+              forks.
+            </li>
+            <li>
+              Drama and legal risks due to failures: given how broken this
+              system is, it’s inevitable that some drivechains will fail via
+              funds getting stuck or stolen, and pressure will be put on miners
+              to fix the problem.
+            </li>
+          </ol>
+          <p>
+            The last is a particularly serious problem in light of Bitcoin’s
+            high degree of mining centralization: a 51% majority of hash power
+            can salvage a drivechain failure by 51% attacking other miners to
+            overrule their votes, or lack of votes. We do not want there to be
+            more incentives to 51% attack!
+          </p>
+          <p>
+            A key thing enabling miner decentralization is the fact that at the
+            moment it is still reasonably possible to form a new pool, and to
+            use decentralized mining pool tech. The rules to create a new,
+            valid, block are clear, and provided you follow those rules, you are
+            not risking enormous financial loss by using a small pool or
+            decentralized pool. If these rules become unclear because
+            drivechains funds are being frozen or looted, that’s an enormous
+            centralization pressure inducing hashing power to move towards the
+            largest pools.
+          </p>
+
+          <h3 id="legal-risk-do-drivechains-make-miners-custodians">
+            Legal Risk: Do Drivechains Make Miners Custodians?
+          </h3>
+          <p>
+            At the moment miners are not in a position where they can steal
+            arbitrary funds. As long as people run full-nodes, even a 51% attack
+            can’t steal arbitrary coins since
+              <span
+                class="highlight"
+                data-critique="intro-4"
+                style="background-color: rgba(0, 123, 255, 0.2)"
+              >no amount of hashing power can
+            fake a digital signature.</span>
+          </p>
+          <p>
+            Drivechains fundamentally change this. In the drivechain model,
+            miners absolutely can steal funds. Does this make miners custodians?
+            Maybe! It certainly invites lawsuits and court orders against miners
+            to recover or seize funds. I personally am being sued by Craig
+            Wright in a lawsuit aiming to do just that. I’m glad that I can
+            confidently tell a court in my defense that I simply do not have the
+            ability to do that. With drivechains, miners won’t have that
+            defense.
+          </p>
+          <p>
+            This also means that voting “incorrectly” could open miners to legal
+            action. This is particularly problematic in the “phone a friend”
+            model of operation where the miner isn’t making a genuine attempt to
+            actually validate the drivechain. It’s easy to imagine courts
+            deciding that operating in this way is negligence.
+          </p>
+
+          <h3 id="fees-and-drivechain-blocksize-limit">
+            Fees and Drivechain Blocksize Limit
+          </h3>
+          <p>
+            It’s been claimed that drivechains will benefit Bitcoin miners
+            through higher fees generated via blind merge mining.
+          </p>
+          <p>
+            However, drivechains have no mechanism to limit total blocksize, and
+            indeed, they’re being promoted as a way to dramatically scale
+            Bitcoin. Without a limit, it’s obvious that the supply of drivechain
+            blockspace is unlimited, and thus there is no reason to expect
+            economic supply and demand to converge to anything more than trivial
+            fees.
+          </p>
+          <p>
+            Note how this particular claim is reminiscent of big blocker claims
+            from the blocksize wars.
+          </p>
+
+          <h4 id="time-value-of-money">Time Value of Money</h4>
+          <p>
+            If drivechains do somehow generate non-trivial fee revenue, that can
+            actually centralize blind merge mining by greatly increasing the
+            capital costs required to blind merge mine! The problem is that the
+            creators of blind merge mined blocks have to pay transaction fees
+            now, denominated in Bitcoin. But they receive the transaction fees
+            in the drivechain coins. In theory those coins are supposed to be
+            pegged 1:1 to BTC. But obviously, with a 3-6 month withdrawal period
+            that is certainly not guaranteed to succeed, paying those fees now
+            requires large amounts of liquidity and risk. Shinobi has a good
+            article explaining this problem.
+          </p>
+          <p>
+            Sztorc has argued that swaps fix this issue. But as Shinobi
+            explains, “the reality is that [swaps] just shove the liquidity
+            requirements onto yet another party, assuming they will provide
+            massive amounts of liquidity for almost nothing in return”.
+          </p>
+          <p>
+            Note that this isn’t directly a problem for Bitcoin users at first
+            glance. But drivechains introduces new incentives to Bitcoin mining,
+            and it would not be surprising if this blind merge mining
+            centralization problem also spilled over to Bitcoin mining.
+          </p>
+
+          <h2 id="are-drivechains-going-to-see-significant-usage">
+            Are Drivechains Going to See Significant Usage?
+          </h2>
+          <p>
+            In any discussion of a Bitcoin soft-fork, we have to weigh costs and
+            benefits. Any soft-fork has significant costs, including technical
+            risks, maintenance burdens, etc.; drivechains are not a trivial
+            feature to implement due to the state required.
+          </p>
+          <p>
+            The history of Bitcoin and altcoins has shown that the overwhelming,
+            long-term, non-speculative, market demand is for the straightforward
+            use-cases of secure store-of-value and cheap and convenient
+            medium-of-exchange, along with a smaller niche occupied by Monero’s
+            enforced privacy use-case. Of those three, drivechains clearly do
+            not meet market demand for a secure store-of-value: it is obviously
+            risky to leave coins on drivechains. Drivechains are also not needed
+            for enforced privacy.
+          </p>
+          <p>
+            That leaves the cheap and convenient medium-of-exchange use-case.
+            Unfortunately, drivechains inherently pose significant
+            medium-of-exchange problems by adding to the exchange rate
+            volatility problem. It is already problematic enough for the
+            medium-of-exchange use-case that Bitcoin has a floating exchange
+            rate relative to other currencies. While drivechains are meant to be
+            1:1 pegged to Bitcoin, due to the long peg-out time windows and
+            inherent risks of holding drivechain coins, drivechain coins will
+            have a floating exchange rate that is likely to slip by significant
+            amounts. Conversions between drivechain coins and Bitcoin will also
+            not be practical without using swaps, and thus incurring transaction
+            fees on top of exchange rate volatility costs.
+          </p>
+          <p>
+            This is an obvious UI/UX problem for drivechain wallets! We already
+            see people often preferring custodial Lightning wallets over
+            sophisticated non-custodial wallets like Phoenix due to their
+            ability to avoid on-chain transaction fees. The transaction fees and
+            exchange rate volatility drivechain coins will experience is an even
+            worse version of this problem.
+          </p>
+
+          <h2 id="final-thoughts">Final Thoughts</h2>
+          <p>
+            Writing this blog post has proven to be surprisingly difficult for
+            me. Usually when I’m asked to review an idea, there’s a reasonable
+            amount of “substance” to the idea. Concrete technical concepts and
+            game theory that can be distilled down to logic and math, and
+            critiqued with logic and math. For example, my 2016 post on Block
+            Publication Incentives for Miners.
+          </p>
+          <p>
+            Drivechains is not like that. Drivechains is a vapid, handwavey,
+            idea that replaces the careful incentive design we see in other
+            Bitcoin protocols — and Bitcoin itself — with blind trust in miners.
+            Of course, blind trust could very well work in practice! But if
+            you’re that willing to rely on trust, why are we going to the
+            trouble of using Bitcoin in the first place?
+          </p>
+
+          <h2 id="footnotes">Footnotes</h2>
+          <div class="footnotes">
+            <ol>
+              <li id="fn:pegged-sidechains">
+                <p>
+                  Enabling Blockchain Innovations with Pegged Sidechains, Adam
+                  Back et al, 2014-10-22
+                  <a href="#fnref:pegged-sidechains">&#8617;</a>
+                  <a href="#fnref:pegged-sidechains:1">&#8617;<sup>2</sup></a>
+                </p>
+              </li>
+              <li id="fn:liquid-multisig">
+                <p>
+                  Specifically an 11-of-15 multisig with a second set of
+                  emergency backup keys that become active after a 28 day expiry
+                  period.
+                  <a href="#fnref:liquid-multisig">&#8617;</a>
+                </p>
+              </li>
+              <li id="fn:invalid-bundle-hash">
+                <p>
+                  Homework question: what happens if the bundle hash is invalid?
+                  <a href="#fnref:invalid-bundle-hash">&#8617;</a>
+                </p>
+              </li>
+              <li id="fn:variance-cost">
+                <p>
+                  A good real world example of the cost of variance is how Riot
+                  switched to a larger pool due to liquidity problems.
+                  <a href="#fnref:variance-cost">&#8617;</a>
+                </p>
+              </li>
+              <li id="fn:enforced-privacy">
+                <p>
+                  While Bitcoin can achieve good privacy with proper use of
+                  technologies like coinjoin and Lightning, the design of
+                  Bitcoin does not mandate the use of those technologies; many
+                  users in practice use Bitcoin in ways that have very poor
+                  privacy. Conversely Monero’s consensus algorithm and widely
+                  used wallets make it quite difficult to bypass Monero’s
+                  coinjoin-like privacy tech, enforcing privacy. Thus entities
+                  like darknet markets who want to avoid their customers getting
+                  doxxed have good reasons to accept Monero.
+                  <a href="#fnref:enforced-privacy">&#8617;</a>
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <aside class="sidebar">
+        <h1>Paul Sztorc's Response</h1>
+        <section id="critique-section1">
+          <p>
+            <span
+              id="intro-1"
+              class="critique-target"
+              style="background-color: rgba(0, 123, 255, 0.1)"
+              >It is nice to hear someone say the quiet part out loud.<br /><br />
+              After all - today, Blockstream promotes Liquid as 'a sidechain'.
+              They engage in a micro-fraud, speaking as though nothing were
+              'abandoned', and the original sidechain idea were still on-track.
+              <br /><br />
+              Peter and I know otherwise. The original 'sidechain' (2015) was
+              not a permissioned closed-source corporate multisig, with unknown
+              un-removable keyholders. In other words, it was not Liquid.
+              Instead, it was a technique on L1 Bitcoin Core, by which our 21M
+              BTC could freely travel to/from other blockchains. This is one
+              area where Peter is accurate on sidechains.</span
+            >
+          </p>
+        </section>
+        <section id="critique-section2">
+          <p>
+            <div
+              id="intro-2"
+              class="critique-target"
+              style="background-color: rgba(255, 0, 0, 0.2)"
+            >Peter is wrong, even on these tiny, non-Drivechain points.
+            Yes - I thought Peter would change his mind after actually looking into DC.
+            Instead he has decided to produce this terrible analysis.
+            </div>
+          </p>
+        </section>
+        <section id="critique-section3">
+          <p>
+            <div
+              id="intro-3"
+              class="critique-target"
+              style="background-color: rgba(255, 0, 0, 0.2)"
+            >
+              This is yet another tiny non-DC paragraph, which for some reason
+              is a completely pointless lie.<br /><br>
+              <b>The timeline (from my point of view):</b>
+              <ul>
+                <li>2014 - Peter says he dislikes the sidechain idea</li>
+                <li>
+                  2015 - I design Drivechain so that even Peter would like it.
+                </li>
+                <li>
+                  2016 - Peter still says he dislikes all merged mined
+                  sidechains
+                </li>
+                <li>2017 - I write various articles about Peter's ideas.</li>
+                <li>2023 - Peter still says he dislikes drivechain</li>
+                <li>2023 - I ask him: "Why?"</li>
+                <li>2023 - Peter says: "I don't have time to explain"</li>
+                <li>2023 - I say "we will pay you"</li>
+                <li>2023 - Peter says: "OK, how is $2500?"</li>
+                <li>2023 - I said "OK"</li>
+              </ul><br>
+              Thus, Peter is the one who chose, unilaterally, the number of
+              hours and the $ amount.
+            </div>
+          </p>
+          <p>
+            <span
+              class="highlight"
+              data-critique="intro-4"
+              style="background-color: rgba(0, 123, 255, 0.2)"
+            ></span>
+          </p>
+          
+          <section id="critique-section4">
+            <p>
+              <div
+                id="intro-4"
+                class="critique-target"
+                style="background-color: rgba(0, 123, 255, 0.1)"
+              >True, but misleading. All agree that 51% hashrate can reorg (and thus, can double spend). In that case, the money is stolen. So: theft yes; fake digital signature, no.
+              </div>
+        
+            </p>
+          </section>
+
+          <p>
+            <span
+              class="highlight"
+              data-critique="intro-6"
+              style="background-color: rgba(0, 123, 255, 0.2)"
+            ></span>
+          </p>
+          
+        </section>
+      </aside>
+    </div>
+  </body>
+  <script src="script.js"></script>
+</html>

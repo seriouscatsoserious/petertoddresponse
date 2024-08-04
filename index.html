@@ -112,7 +112,7 @@
             <span
               class="highlight"
               data-critique="intro-3"
-              style="background-color: rgba(0, 123, 255, 0.2)"
+              style="background-color: rgba(255, 0, 0, 0.2)"
             >            Due to time constraints, this blog post cannot be a comprehensive
             analysis of all possible objections to drivechains. While the
             client, LayerTwo Labs, asked me to confirm that my blog post would
@@ -166,8 +166,12 @@
             A transaction spending such a transaction output is only valid if a
             valid signature is provided, which causes the CheckSig to return
             true. This means that miners can not simply steal coins from the
-            perspective of a fully validating node: no amount of Bitcoin hash
-            power can fake a digital signature.
+            perspective of a fully validating node:               <span
+            class="highlight"
+            data-critique="intro-4"
+            style="background-color: rgba(255, 153, 0, 0.2)"
+          >no amount of Bitcoin hash
+            power can fake a digital signature.</span>
           </p>
           <p>
             In the pegged sidechains proposal, Blockstream proposed the idea of
@@ -183,8 +187,8 @@
             blocks, so strictly speaking, only miners can spend that output.
           </p>
           <p>
-            Of course, if an output can be spent by any miner, surely it will
-            just be stolen, right? Probably! Blockstream proposed to fix this
+            Of course, if an output can be spent by <span class="highlight" data-critique="intro-5" style="background-color: rgba(76, 0, 255, 0.2)">surely it will
+            just be stolen</span> by any miner, right? Probably! Blockstream proposed to fix this
             problem with two main mitigations:
           </p>
           <ol>
@@ -200,16 +204,16 @@
               potentially cancelling the spend before it actually happens. This
               idea is similar in spirit to Lightning’s justice transactions,
               with the very important difference that Lightning’s justice
-              transactions are actually implemented and have been proven to work
-              in the wild.
+              transactions are actually implemented and have been <span class="highlight" data-critique="intro-6" style="background-color: rgba(255, 153, 0, 0.2)">proven to work
+              in the wild.</span>
             </li>
           </ol>
           <p>
             In my discussions with some of the authors of the pegged sidechains
             paper, I’ve been told that one of the main things — in their view —
             that halted the pegged sidechains project was that actually
-            implementing fraud proofs turned out to be much more difficult than
-            they had hoped.
+            <span class="highlight" data-critique="intro-7" style="background-color: rgba(255, 153, 0, 0.2)">implementing fraud proofs turned out to be much more difficult than
+            they had hoped.</span>
           </p>
 
           <h3 id="bip-300-the-drivechain-take-on-hashrate-escrows">
@@ -246,6 +250,7 @@
             successful, a transaction may be included in the block spending some
             or all of the escrowed funds to the bundled transaction outputs.
           </p>
+          <p>There’s some more details in the BIP itself, for instance the fact that specific drivechains must first be proposed by a supermajority of hashing power, the downvote/alarm functionality, etc. But the exact details aren’t particularly important to this critique. What is important, is to understand that miners vote to decide what to do with the escrowed coins, that the vote happens over a long time period, and that there is <span class="highlight" data-critique="intro-8" style="background-color: rgba(255, 153, 0, 0.2)">no mechanism to challenge a vote with a proof of fraud/theft.</span></p>
 
           <h4 id="other-unimportant-bip-300-criticism">
             Other Unimportant BIP-300 Criticism
@@ -254,9 +259,9 @@
             While an unimportant criticism in the overall context of what we
             just discussed, I’ll also point out that the inclusion of human
             readable names, descriptions, tarball hashes, git commit hashes,
-            etc. in the BIP-300 specification is very silly, amateur mistake.
+            etc. in the BIP-300 specification is <span class="highlight" data-critique="intro-9" style="background-color: rgba(255, 153, 0, 0.2)">very silly, amateur mistake.</span>
             Obviously, any real use of a drivechain would not start with
-            non-consensus-enforced information obtained on a blockchain. The
+            <span class="highlight" data-critique="intro-10" style="background-color: rgba(255, 153, 0, 0.2)">non-consensus-enforced information obtained on a blockchain.</span> The
             inclusion of such fields merely serves to aid in fraudulent attempts
             at confusing users.
           </p>
@@ -281,8 +286,8 @@
             BIP-301 doesn’t actually specify in detail how a blind-mined chain
             is meant to actually form a consensus. Those specific rules would be
             part of the blind-mined chain’s consensus, not Bitcoin itself.
-            However it’s notable that for the most obvious and efficient way of
-            implementing those rules, BIP-301 has a serious cryptographic flaw
+            However it’s notable that for <span class="highlight" data-critique="intro-11" style="background-color: rgba(255, 153, 0, 0.2)">the most obvious and efficient way of
+            implementing those rules, BIP-301 has a serious cryptographic flaw</span>
             which we will discuss separately.
           </p>
           <p>
@@ -309,7 +314,7 @@
           <p>
             An obvious problem with this design is it’s subject to equivocation
             attacks. The obvious and efficient implementation of a merge mined
-            chain is to use a SPV proof to the coinbase transaction to prove
+            chain is to <span class="highlight" data-critique="intro-11" style="background-color: rgba(255, 153, 0, 0.2)">use a SPV proof to the coinbase transaction</span> to prove
             that a block has been blind-merge-mined. But since the OP_Return
             format doesn’t commit to which chain is being blind-merge-mined, a
             miner could in fact include multiple conflicting OP_Return
@@ -334,9 +339,9 @@
             previous block header, ensuring that a blind-merge-mined request
             transaction is only valid in a specific block. This directly
             conflicts with an important principle of Bitcoin consensus design:
-            reorgs should not invalidate transactions. For example, this is why
-            coinbase outputs are only spendable after 100 blocks, and why we
-            have not and will not implement consensus-level transaction expiry.
+            <span class="highlight" data-critique="intro-12" style="background-color: rgba(255, 153, 0, 0.2)">reorgs should not invalidate transactions.</span> For example, this is <span class="highlight" data-critique="intro-13" style="background-color: rgba(255, 153, 0, 0.2)">why
+            coinbase outputs are only spendable after 100 blocks</span>, and <span class="highlight" data-critique="intro-14" style="background-color: rgba(255, 153, 0, 0.2)">why we
+            have not and will not implement consensus-level transaction expiry.</span>
           </p>
           <p>
             A way to fix this would be to limit request transactions to
@@ -348,8 +353,8 @@
             The Lack of BIP-301 and BIP-300 Interaction
           </h2>
           <p>
-            A very notable omission in BIP-301 is that BIP-301 does not interact
-            with BIP-300 Hashrate Escrows. There is no mechanism to pay miners
+            A very notable omission in BIP-301 is that BIP-301 <span class="highlight" data-critique="intro-15" style="background-color: rgba(255, 153, 0, 0.2)">does not interact
+            with BIP-300 Hashrate Escrows.</span> There is no mechanism to pay miners
             to ACK or NACK a specific BIP-300 hashrate escrow withdrawal
             proposal. The only way that coins can be withdrawn from a drivechain
             is by the direct participation of at least a majority of hash power
@@ -367,17 +372,17 @@
             </p>
           </blockquote>
           <p>
-            But this obviously conflicts with the requirement that miners either
-            run drivechain full nodes, or trust others to run them for them, to
+            But this obviously <span class="highlight" data-critique="intro-16" style="background-color: rgba(255, 153, 0, 0.2)">conflicts with the requirement that miners either
+            run drivechain full nodes</span>, or <span class="highlight" data-critique="intro-17" style="background-color: rgba(255, 153, 0, 0.2)">trust</span> others to run them for them, to
             safely allow withdrawals to happen. If miners are not doing that,
             either coins become stuck, or they become subject to theft.
           </p>
           <p>
             Frankly, when I first learned about drivechains I had assumed that
-            the blind-merge-mine mechanism also allowed for blind withdrawal
-            proposals of some kind given the decentralization claims around
+            the blind-merge-mine mechanism also allowed for <span class="highlight" data-critique="intro-18" style="background-color: rgba(255, 153, 0, 0.2)">blind withdrawal
+            proposals of some kind</span> given the decentralization claims around
             drivechains. I was shocked when I learned otherwise. The proposal
-            simply punts on this obvious issue, with no solution.
+            simply punts on this obvious <span class="highlight" data-critique="intro-19" style="background-color: rgba(255, 153, 0, 0.2)">issue,</span> with no solution.
           </p>
           <p>We’ll discuss the implications of this omission further.</p>
 
@@ -387,7 +392,7 @@
           <p>
             Now that we’ve covered how the drivechain proposal works, along with
             some more obvious flaws, we can analyze how drivechains can affect
-            Bitcoin. Let’s start with our goals. We want Bitcoin to be:
+            Bitcoin. Let’s start with <span class="highlight" data-critique="intro-20" style="background-color: rgba(255, 153, 0, 0.2)">our goals</span>. We want Bitcoin to be:
           </p>
           <ol>
             <li>
@@ -402,21 +407,21 @@
             </li>
             <li>
               <strong><em>Decentralized</em></strong
-              >: in achieving goal #2, we do not trust any single entity or
+              >: in achieving goal #2, we do not trust any <span class="highlight" data-critique="intro-24" style="background-color: rgba(255, 153, 0, 0.2)">single</span> entity or
               group of entities; we assume any single entity or group of
               entities may attack Bitcoin.
             </li>
           </ol>
           <p>
             The last goal has generated the bulk of the discussion around
-            drivechains: do they encourage centralization of Bitcoin mining?
+            drivechains: do they encourage <span class="highlight" data-critique="intro-21" style="background-color: rgba(255, 153, 0, 0.2)">centralization of Bitcoin mining?</span>
           </p>
 
           <h3 id="mining-centralization">Mining Centralization</h3>
           <p>
-            Bitcoin mining comprises of both hashing, and block verification and
-            production. The economics of Bitcoin mining have both economies and
-            diseconomies of scale. These economies and diseconomies of scale act
+            Bitcoin mining comprises of both <span class="highlight" data-critique="intro-22" style="background-color: rgba(255, 153, 0, 0.2)">hashing</span>, and block verification and
+            production. <span class="highlight" data-critique="intro-23" style="background-color: rgba(255, 153, 0, 0.2)">The economics of Bitcoin mining have both economies and
+            diseconomies of scale.</span> These economies and diseconomies of scale act
             as centralizing and decentralizing pressures.
           </p>
           <p>
@@ -424,7 +429,7 @@
             consumes energy and produces heat. Opportunities to obtain cheap
             energy, and to dispose of or make use of waste heat, have inherent
             diseconomies of scale due to the fact that the cheapest energy
-            production is inherently spread out across the globe. For example,
+            production is inherently <span class="highlight" data-critique="intro-24" style="background-color: rgba(255, 153, 0, 0.2)">spread out across the globe</span>. For example,
             flare gas and stranded/surplus renewable energy are some of the
             cheapest sources of energy available. Obviously, opportunities to
             collect flare gas and renewable energy are inherently spread across
@@ -456,7 +461,7 @@
             the average Bitcoin hashing operation mining blocks directly for
             themselves (solo-mining) would need to wait months or even years
             between payments. Secondly, the operating costs of a mining pool are
-            mostly fixed: the bandwidth and compute power needed per hashing
+            <span class="highlight" data-critique="intro-24" style="background-color: rgba(255, 153, 0, 0.2)">mostly fixed</span>: the bandwidth and compute power needed per hashing
             operation is almost zero. If the overhead costs of operating the
             necessary nodes is non-trivial, there is a significant savings for a
             large pool compared to a small pool as that overhead is spread over
@@ -477,7 +482,7 @@
             While undesirable, this situation isn’t fatal as, in theory, bad
             behavior can cause hashing operations to quickly switch from one
             pool to another. Additionally, there are technologies like
-            StratumV2, p2pool, and braidpool that decentralize block production
+            StratumV2, p2pool, and braidpool that <span class="highlight" data-critique="intro-24" style="background-color: rgba(255, 153, 0, 0.2)">decentralize block production</span>
             (mining).
           </p>
           <p>
@@ -574,12 +579,12 @@
           <p>
             A key thing enabling miner decentralization is the fact that at the
             moment it is still reasonably possible to form a new pool, and to
-            use decentralized mining pool tech. The rules to create a new,
+            use <span class="highlight" data-critique="intro-24" style="background-color: rgba(255, 153, 0, 0.2)">decentralized mining pool tech</span>. The rules to create a new,
             valid, block are clear, and provided you follow those rules, you are
             not risking enormous financial loss by using a small pool or
             decentralized pool. If these rules become unclear because
             drivechains funds are being frozen or looted, that’s an enormous
-            centralization pressure inducing hashing power to move towards the
+            centralization <span class="highlight" data-critique="intro-24" style="background-color: rgba(255, 153, 0, 0.2)">pressure</span> inducing hashing power to move towards the
             largest pools.
           </p>
 
@@ -589,13 +594,8 @@
           <p>
             At the moment miners are not in a position where they can steal
             arbitrary funds. As long as people run full-nodes, even a 51% attack
-            can’t steal arbitrary coins since
-              <span
-                class="highlight"
-                data-critique="intro-4"
-                style="background-color: rgba(0, 123, 255, 0.2)"
-              >no amount of hashing power can
-            fake a digital signature.</span>
+            can’t steal arbitrary coins since no amount of hashing power can
+            fake a digital signature.
           </p>
           <p>
             Drivechains fundamentally change this. In the drivechain model,
@@ -836,33 +836,301 @@
               hours and the $ amount.
             </div>
           </p>
-          <p>
-            <span
-              class="highlight"
-              data-critique="intro-4"
-              style="background-color: rgba(0, 123, 255, 0.2)"
-            ></span>
-          </p>
-          
+
           <section id="critique-section4">
             <p>
               <div
                 id="intro-4"
                 class="critique-target"
-                style="background-color: rgba(0, 123, 255, 0.1)"
+                style="background-color: rgba(255, 153, 0, 0.2)"
               >True, but misleading. All agree that 51% hashrate can reorg (and thus, can double spend). In that case, the money is stolen. So: theft yes; fake digital signature, no.
               </div>
         
             </p>
-          </section>
-
+          </section>          
           <p>
-            <span
-              class="highlight"
-              data-critique="intro-6"
-              style="background-color: rgba(0, 123, 255, 0.2)"
-            ></span>
+            <div
+            id="intro-5"
+            class="critique-target"
+              style="background-color: rgba(76, 0, 255, 0.2)"
+            >These are indeed, the two crucial "problems" of sidechains:
+            <ul>
+                <li>How to secure the contract using only SPV proof (i.e., only PoW)</li>
+                <li>How to deter miners from stealing the coins.</li>
+            </ul></div>
           </p>
+          <section id="critique-section6">
+            <p>
+            <span
+            id="intro-6"
+            class="critique-target"
+              style="background-color: rgba(0, 123, 255, 0.2)"
+            >It is not really an empirical question.
+
+            Miners can steal from LN via censoring justice txns. They don't today. But they could start tomorrow. Nonetheless this is technically true.</span>
+          </p>
+          </section>
+          
+<section id="critique-section7">
+  <p>
+    <div id="intro-7" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      This is a strange sentence. Fraud proofs, when the adversary is 51% hashrate, are impossible -- full stop. Blockstream / "authors" should have known this immediately.
+<br><br>
+      
+
+      FYI -- 51% hash can always censor any message they like from the blockchain -- fraud proof, justice txn, zk-snake prover message. This is a fundamental limitation of the blockchain. Blockstream / "authors" would have known this, even in 2014.
+            <br><br>
+The right way, is to give up on the "fraud proof enforced on L1" idea, and instead find a different way of getting it enforced. That is exactly what Bip300 does.    </div>
+  </p>
+</section>
+
+<section id="critique-section8">
+  <p>
+    <div id="intro-8" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      He is right that there is no L1 mechanism, yes.<br>
+But there isn't "nothing", either -- instead drivechain has m & b parameters -- the effect on exchange rate, and the stream of future txn fees.<br><br>
+But yes, there is no L1 mechanism (because there cannot be one, see immediately above)
+    </div>
+  </p>
+</section>
+
+<section id="critique-section9">
+  <p>
+    <div id="intro-9" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      The "tarball hashes"/"git commit" hashes exist so that all sidechain users know that they are running the same node software.<br><br>
+      This prevents the (otherwise catastrophic) problem where users get into a disagreement over what the phrase "zCash sidechain" refers to, exactly.<br><br>
+      In other words, it prevents the drivechain from hardforking (and doubling the amount of coins). </div>
+  </p>
+</section>
+
+<section id="critique-section10">
+  <p>
+    <div id="intro-10" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      On L1, it <i>is</i> enforced that there be only one such set-of-info.<br><br>
+      The inclusion of these fields is outrageously cheap -- a few dozen bytes, once ever. That is -- 1x in the entire history of the sidechain. And it solves what would otherwise be a brutal problem. It also allows the sidechain to upgrade via soft fork -- as long as future versions of the L2 node software are compatible with the known first release, then they will return the same withdrawal hash and be interoperable (from the pov of Bip300).    </div>
+  </p>
+</section>
+
+<section id="critique-section11">
+  <p>
+    <div id="intro-11" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      This is a mistaken assumption about how Bip301 works.<br><br>
+      Bip301 assumes that the L2 chain has <i>full access</i> to L1. So there is no need to use an SPV proof to the L1 coinbase -- it already has the entire L1 coinbase. And the whole block.<br><br>
+      Namecoin works differently since Namecoin has the ability to survive if Bitcoin Core goes away. Bip301 chains, (BMM chains) however, do not.<br><br>
+      So, the attack Peter describes is not possible.    </div>
+  </p>
+</section>
+
+<section id="critique-section12">
+  <p>
+    <div id="intro-12" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      As we all know: reorgs <i>can</i> allow for double spends. In that way, reorgs <i>already</i> allow for transactions to be invalidated.<br><br>
+      Your node already handles a reorg, by disconnecting a block, and unwinding all the transactions there.    </div>
+  </p>
+</section>
+
+<section id="critique-section13">
+  <p>
+    <div id="intro-13" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      I strongly disagree that this was Satoshi's reason for the 100 block maturity period. I believe it was added to keep miners invested in the continual health of the blockchain. But this is a minor point.
+    </div>
+  </p>
+</section>
+
+<section id="critique-section14">
+  <p>
+    <div id="intro-14" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      Ironically, shortly after Peter wrote this post, a serious LN vulnerability was disclosed. It involved fee-based-replacement of outputs -- Peter is a prominent champion of Replace-By-Fee. This led Peter to quickly and desperately push "OP Expire" - an op code for expiring outputs. This op code would require a softfork, and repurpose an unused OP NOP... exactly the same situation as OP Drivechain.
+    </div>
+  </p>
+</section>
+
+<section id="critique-section15">
+  <p>
+    <div id="intro-15" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      Bip300 proudly ignores what the L2 full nodes are doing -- to do otherwise would be to destroy the sidechain idea completely. So, Bip300 cannot force a sidechain to be written to be compatible with Bip301. Similarly it is possible to use Bip301 to mine an Altcoin -- similar to how vanilla Merged Mining is used to mine Namecoin. (Ruben Somsen/SuperTestnet have already used BMM to mine other chains on BTC, today.)
+    </div>
+  </p>
+</section>
+
+<section id="critique-section16">
+  <p>
+    <div id="intro-16" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      Miners are not required to run L2 full nodes, (or even L1) nodes, as I will explain later.    </div>
+  </p>
+</section>
+
+<section id="critique-section17">
+  <p>
+    <div id="intro-17" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      This is a wrong/misleading use of the word "trust" since it implies reliance / altruism. I only assume that everyone involved will act in their own greedy self-interest. Same as LN.    </div>
+  </p>
+</section>
+
+<section id="critique-section18">
+  <p>
+    <div id="intro-18" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      Nonetheless, in the specific L2s we have made, the WT hash is in each sidechain's "SPV mode" which would count as meeting this criteria I suppose. Other developers could write different Drivechains that did not do this. There is no way to "force" a sidechain developer to do something -- they are always free to make their own mistakes.    </div>
+  </p>
+</section>
+
+<section id="critique-section19">
+  <p>
+    <div id="intro-19" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+      There is no issue.
+      Bip300 works, even if miners do not run full nodes.
+      Bip301 also works, even if miners do not run full nodes.
+      Each of them works separately, and they are independent --
+      L2 devs can use one, or the other, or both or neither.    </div>
+  </p>
+</section>
+
+<section id="critique-section20">
+  <p>
+    <div id="intro-20" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+<img src="Soviet-Bugs-Bunny-meme-47ie1h.jpg">
+If Peter is talking about "our goals" for L1 Bitcoin, then this section makes some sense.
+<br><br>
+However, if he is talking about the goals of all Bitcoin users -- L2 and L1 included, then he has missed the entire point of sidechains. The whole point of sidechains is that users have different needs and interests. And even the same user can have different needs on Monday than they had on Tuesday. For example, Ross Ulbricht buying a coffee, is very different then Ross Ulbricht as admin of SilkRoad DNM. They do not require the same Usefulness/Security/Decentralization and --most crucially-- they do not compete against the same rivals.    </div>
+  </p>
+</section>
+<section id="critique-section21">
+  <p>
+    <div id="intro-21" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">
+     It seems Peter must agree with me, on at least this: if we focus only on the L1 full nodes (ie, the Bitcoin protocol), then Drivechain cannot negatively affect of his three "Useful", "Secure", "Decentralized" qualities. For Usefulness, DC only gives users another L1 UTXO option (so Usefulness either must increase or be unchanged), and it allows them to opt-in to another Security model (only, using Bitcoin instead of an Altcoin -- thus security must increase, seemingly), and it does nothing to harm Decentralization (which I define as "the cost of starting up a new P2P node"). <br><br>Notice that Peter <em>only</em> mentions "mining centralization". He tacitly admits that your L1 full node software (and the entire L1 full node Bitcoin network) are completely unharmed by Bip300. So, <em>his only way</em> that DC affects Bitcoin (supposedly) is via an indirect effect on miner costs.
+</div>
+  </p>
+</section>
+<section id="critique-section22">
+  <p>
+    <div id="intro-22" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">Peter doesn't really know what he is complaining about. Nonetheless, for fun, we can do a small analysis of the "fixed costs" and "economies of scale" of "sha256d" hashes. The results may surprise you.<br><br>
+      <strong>According to Peter, it is bad whenever the "fixed costs" of "hashing" are high.</strong> A Solana full node, for example, costs about $5000 / year (see Solana full node documentation, and related online profitability calculators). To Peter, the <em>mere presence</em> of such a cost, will "centralize mining", no matter what <em>revenues</em> it brings (which, of course, must be more than $5000, else no miner would run the Solana node).<br><br>
+      <strong>What drives fixed costs of hashing? What drives "economies of scale" of hashing?</strong><br><br>
+      First we must determine the demand for hashes. In Bitcoin's case, demand for "hashes" is set via difficulty adjustment. Every 2-week period, the full nodes gobble up exactly as many "hashes" as they think were actually produced in the previous 2-week period. (After which, the difficulty adjusts again, and the process repeats.)<br><br>
+      Difficulty is set by: [1] Mining efficiency; and [2] Mining income.<br><br>
+      Nonetheless I will explain the two. Efficiency is the hashes/$ rate. If all miners adopt a new ASIC that does 2x the hashes (but it otherwise the same cost), then soon after, difficulty will rise by a factor of 2. Income is driven by fees and the exchange rate. If the USD/BTC price doubled (but fees and efficiency stayed the same), then soon after, the difficulty would rise by 2x.<br><br>
+      That is what determines the "scale" of mining -- ie. this is what determines the total number of hashes produced.<br><br>
+      As that number switches from low to high (as it certainly has, from 2009 to the present day), we will be hashing at a larger and larger "scale". We will consume more electricity, we will transform more raw materials into ASIC chips, we will redirect the attention of businessmen and accountants and lawyers and other specialists.<br><br>
+      In the long run, miners will have similar efficiency levels, and total mining costs will equal total mining revenues. If it were otherwise, difficulty would adjust until these two come into balance.<br><br>
+      Therefore, whenever Bitcoin becomes more "successful" -- whenever the USD/BTC price rises, or whenever users pay more total tx fees -- total revenue will increase, and total costs will increase.<br><br>
+      Total costs are skyrocketing. Therefore, fixed costs are rising. Aka -- Peter's "bad" outcome, the "centralization of mining" is exactly equal to, in every way Bitcoin becoming a success and having a high exchange rate and high fees and living for a long time.<br><br>
+      The only way it could be otherwise, would be if every single new mining cost were always classified as "variable". But this is laughable -- in fact, you can download Marathon's public financial statements. You will see that they have "General and Administrative" costs in the tens of millions USD. Sometimes hundreds of millions. And that is a fixed cost! If anything -- Mara would pay that same amount, per year, if they did 10% the hashes, or (1/10th). It is because the total scale is going up, that a greater portion of the total costs will tend to be fixed. Exactly like how the hydroelectric dam is not economical until the electricity demand is high. A big operation means bigger fixed costs and bigger variable costs.
+
+    </div>
+  </p>
+</section>
+<section id="critique-section23">
+  <p>
+    <div id="intro-23" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">Peter uses the phrases "economies of scale", and "fixed costs", but he doesn't quite understand what they mean.<br><br>
+      They don't refer to inherent properties of things, they instead are bound to a <u>single decision-making situation</u>.<br><br>
+      That situation is, in turn, bound to a context -- including, at minimum: <u>time horizon and the desired scale of output</u>.<br><br>
+      For example, imagine we live in the 1920's, and we are considering whether to build a massive hydroelectric dam to provide electrical power to a small city. We compute the "fixed" cost of the dam, the "variable" cost of each watt it could henceforth produce, the lifetime of the dam, and the total demand for electricity at various prices. We try to figure out if the upfront cost of the dam is worth it. When the electrical demand is small, then the dam is not worth it. The dam is overkill. The dam is a relatively expensive cost of getting the next watt. So in that case the dam represents a <u>diseconomy of scale</u>. But when the town grows larger, the analysis might change. In the new context, we might be grateful for the dam and count it as an <u>economy of scale</u>. Time horizon is also key -- "zoom out" and take the view of a "Monarch of the Continent" who will rule for the next 200 years -- in that case, all of these fixed costs become variable. The King is just choosing how many dams he wants to build, and where. And how much electricity to get, as a result. Or, you can "zoom in", and consider someone who has hired an electrician to come out "for the whole day", but who has finished their tasks early and is now sitting idle. Now a "variable cost" has become "fixed". An indeed, it has suddenly obtained "economies of scale". Tomorrow, the electrician will go back to being a variable cost that has no scale economies. Similarly, the dam has enormous <u>economies of scale</u>, at some scales, but not others. Moving 55% of the water through the dam is about as easy as moving 56%. But if we are at 100%, then this "economy of scale" instantly becomes a near-infinite "diseconomy of scale". It depends, on the scale.<br><br>
+      So, Peter's sentence: "The economics of Bitcoin mining have <u>both</u> economies of scale and diseconomies of scale" is meaningless. It is as if Walter White would say: "The chemistries of Lithium have both heat and pressure". The words are there, but the meaning is not.</div>
+  </p>
+</section>
+<section id="critique-section24">
+  <p>
+    <div id="intro-24" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">    <p>Peter's definitions / <u>measurements</u> of "centralization":</p>
+      <ol>
+          <li><strong>quantity</strong> of "entities", that may attack bitcoin</li>
+          <li>The diseconomies of scale that mining economics <strong>"has"</strong></li>
+          <li>How <strong>"spread across the globe"</strong> something is, or
+              <ul>
+                  <li>(in one example), how "spread" across <strong>a thermal sink</strong> (much smaller than the globe)</li>
+              </ul>
+          </li>
+          <li>The <strong>fixed costs</strong> of mining, including
+              <ul>
+                  <li>Cost of L2 nodes (bandwidth, CPU, storage) (which are supposedly mandatory, for miners)</li>
+              </ul>
+          </li>
+          <li>The <strong>pressure</strong> miners feel, to join a larger pool, out of convenience</li>
+          <li>Whether or not their pool <strong>supports</strong> "job negotiation"</li>
+          <li>Whether or not miners are <strong>forced</strong> to run L1 full nodes, by their software</li>
+          <li><strong>Cost</strong> of starting up a new pool</li>
+      </ol></div>
+  </p>
+</section>
+<section id="critique-section25">
+  <p>
+    <div id="intro-25" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section26">
+  <p>
+    <div id="intro-26" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section27">
+  <p>
+    <div id="intro-27" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section28">
+  <p>
+    <div id="intro-28" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section29">
+  <p>
+    <div id="intro-29" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section30">
+  <p>
+    <div id="intro-30" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section31">
+  <p>
+    <div id="intro-31" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section32">
+  <p>
+    <div id="intro-32" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section33">
+  <p>
+    <div id="intro-33" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section34">
+  <p>
+    <div id="intro-34" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section35">
+  <p>
+    <div id="intro-35" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section36">
+  <p>
+    <div id="intro-36" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section37">
+  <p>
+    <div id="intro-37" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section38">
+  <p>
+    <div id="intro-38" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section39">
+  <p>
+    <div id="intro-39" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
+<section id="critique-section40">
+  <p>
+    <div id="intro-40" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+  </p>
+</section>
           
         </section>
       </aside>

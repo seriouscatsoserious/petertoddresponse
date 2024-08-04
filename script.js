@@ -9,13 +9,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const critiqueTarget = document.getElementById(critiqueId);
 
       document.querySelectorAll(".critique-target").forEach((target) => {
-        target.classList.remove("active-critique");
+        target.classList.remove("active-critique"); // Remove active from all to ensure only one is focused
       });
 
-      // Remove and re-add the class to restart the animation
-      critiqueTarget.classList.remove("active-critique");
-      void critiqueTarget.offsetWidth; // Trigger reflow
-      critiqueTarget.classList.add("active-critique");
+      critiqueTarget.classList.add("active-critique"); // Add active to the clicked target
 
       // Calculate the relative position of the clicked element
       const clickedRect = e.target.getBoundingClientRect();

@@ -9,18 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const darkModeToggle = document.getElementById("dark-mode-toggle");
   const blurToggle = document.getElementById("blur-toggle");
 
-  function adjustContentWidth() {
-    const mainContent = document.querySelector(".main-content");
-    const contentWidth = mainContent.clientWidth - 20; // Subtract padding
-    const elements = mainContent.querySelectorAll("*");
-    elements.forEach((el) => {
-      if (el.offsetWidth > contentWidth) {
-        el.style.width = "100%";
-        el.style.maxWidth = `${contentWidth}px`;
-      }
-    });
-  }
-
   // Highlight click functionality
   document.querySelectorAll(".highlight").forEach((highlight) => {
     highlight.addEventListener("click", (e) => {
@@ -77,12 +65,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Updated blur toggle functionality
   blurToggle.addEventListener("change", function () {
-    document
-      .querySelectorAll(".critique-target:not(.active-critique)")
-      .forEach((target) => {
-        target.style.filter = this.checked ? "blur(4px)" : "none";
-      });
+    document.querySelectorAll(".critique-target").forEach((target) => {
+      if (this.checked) {
+        target.classList.add("blur-effect");
+      } else {
+        target.classList.remove("blur-effect");
+      }
+    });
   });
 
   // Close settings menu when clicking outside
@@ -91,8 +82,4 @@ document.addEventListener("DOMContentLoaded", function () {
       settingsMenu.style.display = "none";
     }
   });
-
-  // Adjust content width on load and resize
-  adjustContentWidth();
-  window.addEventListener("resize", adjustContentWidth);
 });

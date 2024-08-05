@@ -9,6 +9,42 @@ document.addEventListener("DOMContentLoaded", function () {
   const darkModeToggle = document.getElementById("dark-mode-toggle");
   const blurToggle = document.getElementById("blur-toggle");
 
+  const rotateModal = document.getElementById("rotate-modal");
+  const rotateOk = document.getElementById("rotate-ok");
+  const rotateCancel = document.getElementById("rotate-cancel");
+  let modalShown = false;
+
+  // Function to save scroll positions
+  function saveScrollPositions() {
+    localStorage.setItem("mainContentScrollPos", mainContent.scrollTop);
+    localStorage.setItem("sidebarScrollPos", sidebar.scrollTop);
+  }
+
+  // Function to restore scroll positions
+  function restoreScrollPositions() {
+    const savedMainContentScrollPos = localStorage.getItem(
+      "mainContentScrollPos"
+    );
+    const savedSidebarScrollPos = localStorage.getItem("sidebarScrollPos");
+
+    if (savedMainContentScrollPos !== null) {
+      mainContent.scrollTop = parseInt(savedMainContentScrollPos);
+    }
+    if (savedSidebarScrollPos !== null) {
+      sidebar.scrollTop = parseInt(savedSidebarScrollPos);
+    }
+  }
+
+  // Save scroll positions when user scrolls
+  mainContent.addEventListener("scroll", saveScrollPositions);
+  sidebar.addEventListener("scroll", saveScrollPositions);
+
+  // Save scroll positions when user leaves the page
+  window.addEventListener("beforeunload", saveScrollPositions);
+
+  // Restore scroll positions when page loads
+  restoreScrollPositions();
+
   // Highlight click functionality
   document.querySelectorAll(".highlight").forEach((highlight) => {
     highlight.addEventListener("click", (e) => {
@@ -45,6 +81,9 @@ document.addEventListener("DOMContentLoaded", function () {
           behavior: "smooth",
         });
       }
+
+      // Save scroll positions after programmatic scrolling
+      setTimeout(saveScrollPositions, 100);
     });
   });
 
@@ -82,4 +121,36 @@ document.addEventListener("DOMContentLoaded", function () {
       settingsMenu.style.display = "none";
     }
   });
+
+  // Rotation modal functionality
+  function checkOrientation() {
+    if (
+      window.innerWidth <= 768 &&
+      window.innerHeight > window.innerWidth &&
+      !modalShown
+    ) {
+      rotateModal.style.display = "block";
+      modalShown = true;
+    } else {
+      rotateModal.style.display = "none";
+    }
+  }
+
+  window.addEventListener("resize", checkOrientation);
+  window.addEventListener("orientationchange", checkOrientation);
+
+  rotateOk.addEventListener("click", function () {
+    rotateModal.style.display = "none";
+    // You can add code here to encourage rotation, e.g., by showing an animation
+    // For now, we'll just log a message
+    console.log("User agreed to rotate");
+  });
+
+  rotateCancel.addEventListener("click", function () {
+    rotateModal.style.display = "none";
+    modalShown = true; // Prevent the modal from showing again in this session
+  });
+
+  // Initial orientation check
+  checkOrientation();
 });

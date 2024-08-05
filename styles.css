@@ -365,6 +365,7 @@ body.dark-mode .divider {
   }
 }
 
+/* Rotation Modal Styles */
 .rotate-modal {
   display: none;
   position: fixed;
@@ -374,6 +375,8 @@ body.dark-mode .divider {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .rotate-modal-content {
@@ -384,6 +387,7 @@ body.dark-mode .divider {
   width: 80%;
   max-width: 300px;
   text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 body.dark-mode .rotate-modal-content {
@@ -391,7 +395,15 @@ body.dark-mode .rotate-modal-content {
   color: #f9f9f9;
 }
 
-.rotate-modal button {
+.rotate-modal h2 {
+  margin-top: 0;
+}
+
+.rotate-icon {
+  margin: 20px 0;
+}
+
+.rotate-button {
   margin: 10px;
   padding: 10px 20px;
   border: none;
@@ -399,12 +411,27 @@ body.dark-mode .rotate-modal-content {
   cursor: pointer;
   background-color: #3498db;
   color: white;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
-body.dark-mode .rotate-modal button {
+body.dark-mode .rotate-button {
   background-color: #2980b9;
 }
 
-.rotate-modal button:hover {
-  opacity: 0.8;
+.rotate-button:hover {
+  background-color: #2980b9;
+}
+
+body.dark-mode .rotate-button:hover {
+  background-color: #1f6da5;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

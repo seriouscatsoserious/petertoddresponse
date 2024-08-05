@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const rotateModal = document.getElementById("rotate-modal");
   const rotateOk = document.getElementById("rotate-ok");
   const rotateCancel = document.getElementById("rotate-cancel");
+  const rotateIcon = document.querySelector(".rotate-icon");
   let modalShown = false;
 
   // Function to save scroll positions
@@ -130,27 +131,80 @@ document.addEventListener("DOMContentLoaded", function () {
       !modalShown
     ) {
       rotateModal.style.display = "block";
+      setTimeout(() => {
+        rotateModal.style.opacity = "1";
+      }, 10);
       modalShown = true;
     } else {
       rotateModal.style.display = "none";
+      rotateModal.style.opacity = "0";
     }
   }
 
+  window.addEventListener("load", checkOrientation);
   window.addEventListener("resize", checkOrientation);
-  window.addEventListener("orientationchange", checkOrientation);
 
-  rotateOk.addEventListener("click", function () {
-    rotateModal.style.display = "none";
-    // You can add code here to encourage rotation, e.g., by showing an animation
-    // For now, we'll just log a message
-    console.log("User agreed to rotate");
+  rotateOk.addEventListener("click", () => {
+    rotateModal.style.opacity = "0";
+    setTimeout(() => {
+      rotateModal.style.display = "none";
+    }, 300);
   });
 
-  rotateCancel.addEventListener("click", function () {
-    rotateModal.style.display = "none";
-    modalShown = true; // Prevent the modal from showing again in this session
+  rotateCancel.addEventListener("click", () => {
+    rotateModal.style.opacity = "0";
+    setTimeout(() => {
+      rotateModal.style.display = "none";
+    }, 300);
   });
 
-  // Initial orientation check
-  checkOrientation();
+  // Rotate animation
+  let rotationInterval;
+
+  function startRotation() {
+    rotationInterval = setInterval(() => {
+      rotateIcon.style.animation = "rotate 2s linear infinite";
+    }, 100);
+  }
+
+  function stopRotation() {
+    clearInterval(rotationInterval);
+    rotateIcon.style.animation = "none";
+  }
+
+  rotateModal.addEventListener("mouseenter", startRotation);
+  rotateModal.addEventListener("mouseleave", stopRotation);
+  rotateModal.addEventListener("touchstart", startRotation);
+  rotateModal.addEventListener("touchend", stopRotation);
+
+  // Load saved settings
+  function loadSavedSettings() {
+    const savedDarkMode = localStorage.getItem("darkMode");
+    const savedBlurEffect = localStorage.getItem("blurEffect");
+
+    if (savedDarkMode === "true") {
+      darkModeToggle.checked = true;
+      document.body.classList.add("dark-mode");
+    }
+
+    if (savedBlurEffect === "true") {
+      blurToggle.checked = true;
+      document.querySelectorAll(".critique-target").forEach((target) => {
+        target.classList.add("blur-effect");
+      });
+    }
+  }
+
+  // Save settings
+  function saveSettings() {
+    localStorage.setItem("darkMode", darkModeToggle.checked);
+    localStorage.setItem("blurEffect", blurToggle.checked);
+  }
+
+  // Event listeners for saving settings
+  darkModeToggle.addEventListener("change", saveSettings);
+  blurToggle.addEventListener("change", saveSettings);
+
+  // Load saved settings on page load
+  loadSavedSettings();
 });

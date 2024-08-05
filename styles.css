@@ -126,3 +126,10 @@ a:hover {
   background-color: transparent; /* Ensure no extra background color is applied */
   padding: 5px 0; /* Add padding for better spacing */
 }
+
+.critique-target img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px 0;
+}

@@ -482,14 +482,14 @@
             While undesirable, this situation isn’t fatal as, in theory, bad
             behavior can cause hashing operations to quickly switch from one
             pool to another. Additionally, there are technologies like
-            StratumV2, p2pool, and braidpool that <span class="highlight" data-critique="intro-24" style="background-color: rgba(255, 153, 0, 0.2)">decentralize block production</span>
+            StratumV2, <span class="highlight" data-critique="intro-27" style="background-color: rgba(255, 153, 0, 0.2)">p2pool</span>, and braidpool that <span class="highlight" data-critique="intro-24" style="background-color: rgba(255, 153, 0, 0.2)">decentralize block production</span>
             (mining).
           </p>
           <p>
             While we don’t have space to go into details about these
             technologies, the important thing in the context of drivechains is
             that they all require hashing operations to produce blocks
-            themselves, requiring them to run full nodes.
+            themselves, <span class="highlight" data-critique="intro-28" style="background-color: rgba(255, 153, 0, 0.2)">requiring them to run full nodes.</span>
           </p>
 
           <h3 id="do-miners-need-to-run-drivechain-nodes">
@@ -499,9 +499,9 @@
           <p>
             The reason why is simple: if drivechains are to work correctly, coin
             withdrawal needs to work. Drivechains requires that a majority of
-            hash power directly vote on withdrawal proposals, and the only way
+            hash power directly vote on withdrawal proposals, and <span class="highlight" data-critique="intro-29" style="background-color: rgba(255, 153, 0, 0.2)">the only way
             to validate a withdrawal proposal for a given drivechain is to run a
-            node for that drivechain.
+            node for that drivechain.</span>
           </p>
           <p>
             Since there could be dozens, or even hundreds, of drivechains this
@@ -1072,17 +1072,26 @@ However, if he is talking about the goals of all Bitcoin users -- L2 and L1 incl
 </section>
 <section id="critique-section27">
   <p>
-    <div id="intro-27" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+    <div id="intro-27" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">Actually, Peter's logic implies that P2Pool centralizes mining. P2Pool pays miners out, as rapidly as possible. Thus, each participant consumes around 43 bytes in the coinbase, to create a new UTXO. Thus each new P2Pool miner, wastes 43-millionths of every 1 MB block.<br><br>
+      So, if/when fee revenues are $10B per year, it will cost each miner a "fixed" $430,000 per year, to join P2Pool. If a miner isn't going to earn <u>profits</u> that are more than that, then they are out of the running. If instead they use a regular pool, not P2Pool, they don't have to pay this cost.<br><br>Some suggest that LN can remedy this problem.<br><br>
+      Unfortunately, not so. LN still has an upfront cost for each new miner who joins: you must open a channel to them, and this channel must already contain all the money you intend to pay them (ie, inbound liquidity problem). Refreshing this channel costs bytes, and the channel comes with risk of having these funds frozen for 2 weeks.<br><br>
+      One supreme irony, is that drivechain itself can be used to allow small miners to collect frequently from their large pools. They are simply paid out on a drivechain which exists for this purpose. This can be done for free, since the fee-rates on that chain will be near zero. Thus, it will always have room for new miners, even if they are ultra-small. Miner's funds will be safe in a hashrate escrow, since miners are the ones who enforce Bip300 withdrawals.<br><br>
+      So, Drivechain actually <u>decentralizes</u> mining, more than StratumV2 / p2pool / braidpool.
+
+    </div>
   </p>
 </section>
 <section id="critique-section28">
   <p>
-    <div id="intro-28" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+    <div id="intro-28" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">You do not need to run a node in order to mine. You can get the block template (ie a block candidate) from someone else. 99%+ of miners do this today.</div>
   </p>
 </section>
 <section id="critique-section29">
   <p>
-    <div id="intro-29" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+    <div id="intro-29" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">False.
+      Syncing your own L2 full node is just one way, of many.<br><br><img src="certaintytable.png"><br><br>
+      A full node costs C, and it gives you some certainty that you are looking at the sidechain state, and looking at the correct withdrawal. But there are many ways of getting the sidechain state---some more certain, some less.<br><br>
+      The critical withdrawal txn is even easier to get.</div>
   </p>
 </section>
 <section id="critique-section30">

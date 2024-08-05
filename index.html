@@ -520,7 +520,7 @@
           <p>
             I suspect the reason for this omission is that the authors of
             drivechains attempted to make blind withdrawal voting, and failed
-            due to it being incompatible with rational game theory: if you can
+            due to it being <span class="highlight" data-critique="intro-30" style="background-color: rgba(255, 153, 0, 0.2)">incompatible with rational game theory:</span> if you can
             pay money to steal coins, obviously someone will do exactly that.
             Requiring a majority of hash power to vote in favor of a coin
             withdrawal obscures this problem.
@@ -529,9 +529,9 @@
             The fact that miners need to run drivechain nodes is particularly
             problematic to the claims that drivechains will scale Bitcoin.
             Obviously, if drivechains supporting hundreds or thousands of
-            transactions per second catch on, miners will need to invest in
+            transactions per second catch on, <span class="highlight" data-critique="intro-31" style="background-color: rgba(255, 153, 0, 0.2)">miners will need to invest in
             thousands or tens of thousands of dollars worth of computing
-            hardware and bandwidth to mine. This is completely incompatible with
+            hardware and bandwidth to mine.</span> This is completely incompatible with
             technologies that decentralize mining such as the aformentioned
             StratumV2 and p2pool/braidpool.
           </p>
@@ -539,7 +539,7 @@
           <h3 id="the-phone-a-friend-model">The “Phone a Friend” Model</h3>
           <p>
             To avoid the necessity of miners running drivechain nodes, it has
-            been suggested that miners could instead just “phone a friend” and
+            been suggested that miners could instead just <span class="highlight" data-critique="intro-32" style="background-color: rgba(255, 153, 0, 0.2)">“phone a friend”</span> and
             just copy withdrawal approval hashes from “trusted sources” like
             social media. There’s a lot of problems with this model:
           </p>
@@ -1096,17 +1096,34 @@ However, if he is talking about the goals of all Bitcoin users -- L2 and L1 incl
 </section>
 <section id="critique-section30">
   <p>
-    <div id="intro-30" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+    <div id="intro-30" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">Peter is outraged at a "glaring omission", of a 300+301 combo.<br><br>
+      Yet, he also finds the 300+301 combo to be "incompatible with rational game theory".
+     Perhaps, he thinks the combo is desirable, but unobtainable. <br><br>
+     Miners only need to investigate a withdrawal <u>if it is disputed</u>.<br><br>
+     But in practice, it will be too difficult for anyone to get away with a dispute. Therefore: there won't be any disputes.<br><br>
+     Lightning works the same way -- you can't get away with cheating the channel. So therefore, no one tries to cheat. Merely the <u>threat</u> of enforcement keeps counterparties in line. We have our cake and eat it too: LN is secure, but we DON'T broadcast every single channel update to L1. Drivechain withdrawals work exactly the same way.<br><br>
+     In this figure, I show how L2 nodes work -- all of them calculate the exact same single withdrawal hash. It is automatically the same hash for everyone, over a 3-6 month period. That is why it is too difficult for someone to actually dispute the hash.<br><br><img src="graphic.png"><br><br>Every single L2 node is holding up the same "sign".<br><br>
+     And they all hold up the sign for 3+ months.
+     In the event of a dispute, miners have 3-6 months to sync the L2 DC node from scratch, which could take at most a few days. To sync a Solana node (one of the worst offenders) over 10 days, would cost a mere $137 total. Then, miners can turn that L2 node off, until the next dispute.</div>
   </p>
 </section>
 <section id="critique-section31">
   <p>
-    <div id="intro-31" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+    <div id="intro-31" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">Not true at all. It isn't like Stratum V2 and P2P will burst into flames, as soon as your mining operation crosses the $10,000 line.<br><br>
+      Mining fixed costs do not affect total number of miners, either.<br><br>
+      For example: we could start with 888 miners each spending $100 fixed, $5000 variable, and earning $9000. Then ten years later we could have 888 miners each spending $100k fixed, $5M variable, and earning $9M.</div>
   </p>
 </section>
 <section id="critique-section32">
   <p>
-    <div id="intro-32" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">content goes here</div>
+    <div id="intro-32" class="critique-target" style="background-color: rgba(255, 153, 0, 0.2)">I'm afraid that this section is quite illogical, since it doesn't actually address "phone a friend" problems. It addresses "effort" problems - but these are the same as "mandatory full node" problems.<br><br>
+      See for yourself, rewrite his paragraphs thus:<br>
+      <ol>
+        <li>Why should miners [run a full node at all]?</li>
+        <li>Workload: [running a node] might take work every week or so.</li>
+        <li>Pressure will be put on miners to [run a node] to fix the problem.</li>
+      </ol>
+      Peter doesn't even seem to realize, that he isn't commenting on the Phone a Friend model.</div>
   </p>
 </section>
 <section id="critique-section33">

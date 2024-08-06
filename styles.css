@@ -90,7 +90,6 @@ a:hover {
 .highlight {
   cursor: pointer;
   transition: background-color 0.3s ease;
-  background-color: rgba(52, 152, 219, 0.2);
   padding: 2px 4px;
   border-radius: 3px;
 }
@@ -100,20 +99,13 @@ a:hover {
 }
 
 .critique-target {
-  display: block;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  background-color: rgba(0, 123, 255, 0.1);
-  transition: filter 0.3s ease;
+  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.critique-target:not(.active-critique) {
+.blur-effect .critique-target:not(.active-critique) {
   filter: blur(4px);
-}
-
-.active-critique {
-  filter: none;
 }
 
 .critique-target ul {
@@ -256,7 +248,7 @@ body.dark-mode .sidebar {
 }
 
 body.dark-mode .critique-target {
-  background-color: rgba(255, 255, 255, 0.1);
+  color: #f9f9f9;
 }
 
 body.dark-mode a {

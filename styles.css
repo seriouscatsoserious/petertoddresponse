@@ -98,12 +98,30 @@ a:hover {
   opacity: 0.8;
 }
 
-body.blur-active .critique-target {
+/* body.blur-active .critique-target {
   filter: blur(4px);
   transition: filter 0.3s ease, background-color 0.3s ease;
 }
 
 body.blur-active .critique-target.active-critique {
+  filter: none;
+}
+
+body.blur-active .critique-target:not(.active-critique) {
+  filter: blur(4px);
+  transition: filter 0.3s ease;
+} */
+
+body.blur-active .critique-target:not(.active-critique) {
+  filter: blur(4px);
+  transition: filter 0.3s ease, background-color 0.3s ease;
+}
+
+.critique-target:not(.active-critique) {
+  filter: blur(4px);
+}
+
+body:not(.blur-active) .critique-target {
   filter: none;
 }
 
@@ -113,11 +131,13 @@ body.blur-active .critique-target.active-critique {
   display: inline-block;
   width: 100%;
   box-sizing: border-box;
+  padding: 12px;
+  border-radius: 8px;
 }
 
-/* .blur-effect .critique-target:not(.active-critique) {
+.blur-effect .critique-target:not(.active-critique) {
   filter: blur(4px);
-} */
+}
 
 .critique-target ul {
   background-color: transparent;

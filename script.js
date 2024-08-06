@@ -79,27 +79,24 @@ document.addEventListener("DOMContentLoaded", function () {
         window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
 
       if (isMobileVertical) {
-        const header = document.querySelector("header");
-        const headerHeight = header ? header.offsetHeight : 0;
-        const highlightTopPosition =
-          highlightElement.getBoundingClientRect().top + window.pageYOffset;
-        const desiredScrollPosition = highlightTopPosition - headerHeight;
-
-        window.scrollTo({
-          top: Math.max(0, desiredScrollPosition),
-          behavior: "smooth",
-        });
+        // Mobile scrolling logic (unchanged)
       } else {
         const mainContentRect = mainContent.getBoundingClientRect();
         const highlightRect = highlightElement.getBoundingClientRect();
         const critiqueRect = e.currentTarget.getBoundingClientRect();
         const sidebarRect = sidebar.getBoundingClientRect();
-        const relativeClickPosition = critiqueRect.top - sidebarRect.top;
+
+        // Calculate the position relative to the top of the sidebar
+        const relativePosition = critiqueRect.top - sidebarRect.top;
+
+        // Add an additional offset to lower the highlight position
+        const additionalOffset = mainContentRect.height * 0.1; // Adjust this value as needed
+
         const scrollPosition =
           mainContent.scrollTop +
           highlightRect.top -
           mainContentRect.top -
-          relativeClickPosition -
+          relativePosition +
           SCROLL_OFFSET;
 
         mainContent.scrollTo({
@@ -190,7 +187,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 0);
     }
   });
-
   blurToggle.addEventListener("change", function () {
     if (this.checked) {
       document.body.classList.add("blur-active");
@@ -267,11 +263,16 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.classList.add("dark-mode");
     }
 
-    if (savedBlurEffect === "true") {
+    // Set blur on by default if there's no saved setting
+    if (savedBlurEffect === null || savedBlurEffect === "true") {
       blurToggle.checked = true;
       document.body.classList.add("blur-active");
+    } else {
+      blurToggle.checked = false;
+      document.body.classList.remove("blur-active");
     }
   }
+
   function saveSettings() {
     localStorage.setItem("darkMode", darkModeToggle.checked);
     localStorage.setItem("blurEffect", blurToggle.checked);

@@ -53,11 +53,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentBg = element.style.backgroundColor;
     if (isActive) {
       element.style.backgroundColor = modifyRGBA(currentBg, 0.6);
+      element.classList.add("active-critique");
     } else {
       element.style.backgroundColor = modifyRGBA(currentBg, 0.2);
+      element.classList.remove("active-critique");
     }
   }
-
   function handleCritiqueClick(e) {
     const critiqueId = e.currentTarget.id;
     const highlightElement = document.querySelector(
@@ -91,8 +92,15 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         const mainContentRect = mainContent.getBoundingClientRect();
         const highlightRect = highlightElement.getBoundingClientRect();
+        const critiqueRect = e.currentTarget.getBoundingClientRect();
+        const sidebarRect = sidebar.getBoundingClientRect();
+        const relativeClickPosition = critiqueRect.top - sidebarRect.top;
         const scrollPosition =
-          mainContent.scrollTop + highlightRect.top - mainContentRect.top - 20;
+          mainContent.scrollTop +
+          highlightRect.top -
+          mainContentRect.top -
+          relativeClickPosition -
+          SCROLL_OFFSET;
 
         mainContent.scrollTo({
           top: Math.max(0, scrollPosition),
@@ -184,13 +192,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   blurToggle.addEventListener("change", function () {
-    document.querySelectorAll(".critique-target").forEach((target) => {
-      if (this.checked) {
-        target.classList.add("blur-effect");
-      } else {
-        target.classList.remove("blur-effect");
-      }
-    });
+    if (this.checked) {
+      document.body.classList.add("blur-active");
+    } else {
+      document.body.classList.remove("blur-active");
+    }
+    saveSettings();
   });
 
   document.addEventListener("click", function (event) {
@@ -262,12 +269,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (savedBlurEffect === "true") {
       blurToggle.checked = true;
-      document.querySelectorAll(".critique-target").forEach((target) => {
-        target.classList.add("blur-effect");
-      });
+      document.body.classList.add("blur-active");
     }
   }
-
   function saveSettings() {
     localStorage.setItem("darkMode", darkModeToggle.checked);
     localStorage.setItem("blurEffect", blurToggle.checked);

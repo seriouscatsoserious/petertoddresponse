@@ -98,15 +98,26 @@ a:hover {
   opacity: 0.8;
 }
 
+body.blur-active .critique-target {
+  filter: blur(4px);
+  transition: filter 0.3s ease, background-color 0.3s ease;
+}
+
+body.blur-active .critique-target.active-critique {
+  filter: none;
+}
+
 .critique-target {
+  cursor: pointer;
+  transition: background-color 0.3s ease, filter 0.3s ease;
   display: inline-block;
   width: 100%;
   box-sizing: border-box;
 }
 
-.blur-effect .critique-target:not(.active-critique) {
+/* .blur-effect .critique-target:not(.active-critique) {
   filter: blur(4px);
-}
+} */
 
 .critique-target ul {
   background-color: transparent;

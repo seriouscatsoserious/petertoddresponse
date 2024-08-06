@@ -90,7 +90,6 @@ a:hover {
 .highlight {
   cursor: pointer;
   transition: background-color 0.3s ease;
-  background-color: rgba(52, 152, 219, 0.2);
   padding: 2px 4px;
   border-radius: 3px;
 }
@@ -99,21 +98,45 @@ a:hover {
   opacity: 0.8;
 }
 
-.critique-target {
-  display: block;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  background-color: rgba(0, 123, 255, 0.1);
+/* body.blur-active .critique-target {
+  filter: blur(4px);
+  transition: filter 0.3s ease, background-color 0.3s ease;
+}
+
+body.blur-active .critique-target.active-critique {
+  filter: none;
+}
+
+body.blur-active .critique-target:not(.active-critique) {
+  filter: blur(4px);
   transition: filter 0.3s ease;
+} */
+
+body.blur-active .critique-target:not(.active-critique) {
+  filter: blur(4px);
+  transition: filter 0.3s ease, background-color 0.3s ease;
 }
 
 .critique-target:not(.active-critique) {
   filter: blur(4px);
 }
 
-.active-critique {
+body:not(.blur-active) .critique-target {
   filter: none;
+}
+
+.critique-target {
+  cursor: pointer;
+  transition: background-color 0.3s ease, filter 0.3s ease;
+  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.blur-effect .critique-target:not(.active-critique) {
+  filter: blur(4px);
 }
 
 .critique-target ul {
@@ -256,7 +279,7 @@ body.dark-mode .sidebar {
 }
 
 body.dark-mode .critique-target {
-  background-color: rgba(255, 255, 255, 0.1);
+  color: #f9f9f9;
 }
 
 body.dark-mode a {

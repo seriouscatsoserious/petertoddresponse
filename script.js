@@ -15,13 +15,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const rotateIcon = document.querySelector(".rotate-icon");
   let modalShown = false;
 
-  // Function to save scroll positions
   function saveScrollPositions() {
     localStorage.setItem("mainContentScrollPos", mainContent.scrollTop);
     localStorage.setItem("sidebarScrollPos", sidebar.scrollTop);
   }
 
-  // Function to restore scroll positions
   function restoreScrollPositions() {
     const savedMainContentScrollPos = localStorage.getItem(
       "mainContentScrollPos"
@@ -36,59 +34,144 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Save scroll positions when user scrolls
   mainContent.addEventListener("scroll", saveScrollPositions);
   sidebar.addEventListener("scroll", saveScrollPositions);
 
-  // Save scroll positions when user leaves the page
   window.addEventListener("beforeunload", saveScrollPositions);
 
-  // Restore scroll positions when page loads
   restoreScrollPositions();
 
-  // Highlight click functionality
-  document.querySelectorAll(".highlight").forEach((highlight) => {
-    highlight.addEventListener("click", (e) => {
-      const critiqueId = e.target.dataset.critique;
-      const critiqueTarget = document.getElementById(critiqueId);
+  function modifyRGBA(rgba, opacity) {
+    const values = rgba.match(/[\d.]+/g);
+    if (values && values.length >= 3) {
+      return `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${opacity})`;
+    }
+    return rgba;
+  }
 
-      document.querySelectorAll(".critique-target").forEach((target) => {
-        target.classList.remove("active-critique");
+  function setActiveStyle(element, isActive) {
+    const currentBg = element.style.backgroundColor;
+    if (isActive) {
+      element.style.backgroundColor = modifyRGBA(currentBg, 0.6);
+      element.classList.add("active-critique");
+    } else {
+      element.style.backgroundColor = modifyRGBA(currentBg, 0.2);
+      element.classList.remove("active-critique");
+    }
+  }
+  function handleCritiqueClick(e) {
+    const critiqueId = e.currentTarget.id;
+    const highlightElement = document.querySelector(
+      `.highlight[data-critique="${critiqueId}"]`
+    );
+
+    document
+      .querySelectorAll(".critique-target, .highlight")
+      .forEach((element) => {
+        setActiveStyle(element, false);
       });
 
-      critiqueTarget.classList.add("active-critique");
+    setActiveStyle(e.currentTarget, true);
+    if (highlightElement) {
+      setActiveStyle(highlightElement, true);
 
       const isMobileVertical =
         window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
 
       if (isMobileVertical) {
-        sidebar.scrollTop = critiqueTarget.offsetTop - sidebar.offsetTop;
+        // Mobile scrolling logic (unchanged)
       } else {
-        const clickedRect = e.target.getBoundingClientRect();
         const mainContentRect = mainContent.getBoundingClientRect();
-        const relativeClickPosition = clickedRect.top - mainContentRect.top;
-
-        const critiqueRect = critiqueTarget.getBoundingClientRect();
+        const highlightRect = highlightElement.getBoundingClientRect();
+        const critiqueRect = e.currentTarget.getBoundingClientRect();
         const sidebarRect = sidebar.getBoundingClientRect();
+
+        // Calculate the position relative to the top of the sidebar
+        const relativePosition = critiqueRect.top - sidebarRect.top;
+
+        // Add an additional offset to lower the highlight position
+        const additionalOffset = mainContentRect.height * 0.1; // Adjust this value as needed
+
         const scrollPosition =
-          sidebar.scrollTop +
-          critiqueRect.top -
-          sidebarRect.top -
-          relativeClickPosition -
+          mainContent.scrollTop +
+          highlightRect.top -
+          mainContentRect.top -
+          relativePosition +
           SCROLL_OFFSET;
 
-        sidebar.scrollTo({
+        mainContent.scrollTo({
           top: Math.max(0, scrollPosition),
           behavior: "smooth",
         });
       }
 
-      // Save scroll positions after programmatic scrolling
       setTimeout(saveScrollPositions, 100);
+    }
+  }
+
+  document.querySelectorAll(".critique-target").forEach((critique) => {
+    critique.addEventListener("click", handleCritiqueClick);
+  });
+
+  document.querySelectorAll(".highlight").forEach((highlight) => {
+    highlight.addEventListener("click", (e) => {
+      const critiqueId = e.target.dataset.critique;
+      const critiqueTarget = document.getElementById(critiqueId);
+
+      document
+        .querySelectorAll(".critique-target, .highlight")
+        .forEach((element) => {
+          setActiveStyle(element, false);
+        });
+
+      setActiveStyle(e.target, true);
+      if (critiqueTarget) {
+        setActiveStyle(critiqueTarget, true);
+
+        const isMobileVertical =
+          window.innerWidth <= 768 && window.innerHeight > window.innerWidth;
+
+        if (isMobileVertical) {
+          const mainContent = document.querySelector(".main-content");
+          const header = document.querySelector("header");
+
+          const headerHeight = header ? header.offsetHeight : 0;
+          const mainContentHeight = mainContent.offsetHeight;
+          const critiqueTopPosition =
+            critiqueTarget.getBoundingClientRect().top + window.pageYOffset;
+
+          const desiredScrollPosition =
+            critiqueTopPosition - headerHeight - mainContentHeight;
+
+          window.scrollTo({
+            top: Math.max(0, desiredScrollPosition),
+            behavior: "smooth",
+          });
+        } else {
+          const clickedRect = e.target.getBoundingClientRect();
+          const mainContentRect = mainContent.getBoundingClientRect();
+          const relativeClickPosition = clickedRect.top - mainContentRect.top;
+
+          const critiqueRect = critiqueTarget.getBoundingClientRect();
+          const sidebarRect = sidebar.getBoundingClientRect();
+          const scrollPosition =
+            sidebar.scrollTop +
+            critiqueRect.top -
+            sidebarRect.top -
+            relativeClickPosition -
+            SCROLL_OFFSET;
+
+          sidebar.scrollTo({
+            top: Math.max(0, scrollPosition),
+            behavior: "smooth",
+          });
+        }
+
+        setTimeout(saveScrollPositions, 100);
+      }
     });
   });
 
-  // Settings toggle functionality
   settingsButton.addEventListener("click", function (event) {
     event.stopPropagation();
     settingsMenu.style.display =
@@ -104,26 +187,21 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 0);
     }
   });
-
-  // Updated blur toggle functionality
   blurToggle.addEventListener("change", function () {
-    document.querySelectorAll(".critique-target").forEach((target) => {
-      if (this.checked) {
-        target.classList.add("blur-effect");
-      } else {
-        target.classList.remove("blur-effect");
-      }
-    });
+    if (this.checked) {
+      document.body.classList.add("blur-active");
+    } else {
+      document.body.classList.remove("blur-active");
+    }
+    saveSettings();
   });
 
-  // Close settings menu when clicking outside
   document.addEventListener("click", function (event) {
     if (!settingsToggle.contains(event.target)) {
       settingsMenu.style.display = "none";
     }
   });
 
-  // Rotation modal functionality
   function checkOrientation() {
     if (
       window.innerWidth <= 768 &&
@@ -158,7 +236,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 300);
   });
 
-  // Rotate animation
   let rotationInterval;
 
   function startRotation() {
@@ -177,7 +254,6 @@ document.addEventListener("DOMContentLoaded", function () {
   rotateModal.addEventListener("touchstart", startRotation);
   rotateModal.addEventListener("touchend", stopRotation);
 
-  // Load saved settings
   function loadSavedSettings() {
     const savedDarkMode = localStorage.getItem("darkMode");
     const savedBlurEffect = localStorage.getItem("blurEffect");
@@ -187,24 +263,23 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.classList.add("dark-mode");
     }
 
-    if (savedBlurEffect === "true") {
+    // Set blur on by default if there's no saved setting
+    if (savedBlurEffect === null || savedBlurEffect === "true") {
       blurToggle.checked = true;
-      document.querySelectorAll(".critique-target").forEach((target) => {
-        target.classList.add("blur-effect");
-      });
+      document.body.classList.add("blur-active");
+    } else {
+      blurToggle.checked = false;
+      document.body.classList.remove("blur-active");
     }
   }
 
-  // Save settings
   function saveSettings() {
     localStorage.setItem("darkMode", darkModeToggle.checked);
     localStorage.setItem("blurEffect", blurToggle.checked);
   }
 
-  // Event listeners for saving settings
   darkModeToggle.addEventListener("change", saveSettings);
   blurToggle.addEventListener("change", saveSettings);
 
-  // Load saved settings on page load
   loadSavedSettings();
 });
